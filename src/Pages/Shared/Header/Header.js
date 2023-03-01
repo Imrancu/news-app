@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { Button, Image } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import { FaUserAlt } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../../../contexts/AuthProvider/AuthProvider';
 import LeftSideNav from '../LeftSideNav/LeftSideNav';
 
 const Header = () => {
+    const { user, logOut } = useContext(AuthContext);
+    const handleLogOut = () => {
+        logOut()
+            .then(() => {})
+            .catch(error => console.error(error))
+    }
     return (
         <Navbar className='mb-3' collapseOnSelect expand="lg" bg="light" variant="light">
             <Container>
-                <Navbar.Brand href="#home">News App</Navbar.Brand>
+                <Navbar.Brand><Link to='/'>News App</Link></Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="me-auto">
@@ -27,11 +37,32 @@ const Header = () => {
                             </NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
-                    <Nav>
-                        <Nav.Link href="#deets">More deets</Nav.Link>
-                        <Nav.Link eventKey={2} href="#memes">
-                            Dank memes
-                        </Nav.Link>
+                    <Nav className='flex align-items-center'>
+                        <>
+                            {
+                                user?.uid ?
+                                    <>
+                                        <span className='me-3'>{user?.displayName}</span>
+                                        <Button onClick={handleLogOut}>Logout</Button>
+                                    </>
+                                    :
+                                    <>
+                                        <Link className='me-3' to='/login'>Login</Link>
+                                        <Link to='/register'>Register</Link>
+                                    </>
+                            }
+
+                        </>
+                        <Link className='ms-3' to="/profile">
+                            {user?.photoURL ?
+                                <Image
+                                    src={user.photoURL}
+                                    roundedCircle
+                                    style={{ height: '30px', width: "30px" }} />
+                                :
+                                <FaUserAlt />
+                            }
+                        </Link>
                     </Nav>
                     <div className='d-lg-none'>
                         <LeftSideNav />
